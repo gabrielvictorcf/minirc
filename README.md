@@ -8,3 +8,8 @@ Made by:
 - Gabriel Victor Cardoso Fernandes - 11878296
 - Pedro Henrique Borges Monici - 10816732
 - Guilherme Machado Rios - 11222839
+
+## How to
+1. Open two terminals (or have two hosts in the same network)
+2. In each terminal, run `make run`
+3. Now you can just start chatting!
