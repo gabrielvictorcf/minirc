@@ -55,6 +55,10 @@ void* chat_send(void *args) {
         irc_send(user, &pkt, 0);
         memset(pkt.data, '\0', pkt.length);
     }
+    
+    printf("stdin exhausted - closing the client\n");
+    close(user->sock);
+    exit(0);
 }
 
 int irc_recv(irc_socket_t* user, irc_packet_t* pkt, int flags) {
