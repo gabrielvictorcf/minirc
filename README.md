@@ -10,6 +10,11 @@ Made by:
 - Guilherme Machado Rios - 11222839
 
 ## How to
-1. Open two terminals (or have two hosts in the same network)
-2. In each terminal, run `make run`
-3. Now you can just start chatting!
+1. Compile with `make`
+2. Open two terminals (or have two hosts in the same network)
+3. In each terminal, run `make run`
+4. Now you can just start chatting!
+
+## Specifications
+- linux 5.10.16.3
+- gcc (Debian 10.2.1-6) 10.2.1 20210110
