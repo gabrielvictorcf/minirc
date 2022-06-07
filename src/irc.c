@@ -14,6 +14,7 @@ void exit_error(const char* errmsg) {
 
 // IRC defines and structs
 #define MSG_LEN 4096
+#define IRC_PORT 9090
 
 typedef struct _irc_socket {
     int sock;
@@ -126,7 +127,7 @@ int main(int argc, char** argv) {
         .addr = {
             .sin_family = AF_INET,
             .sin_addr.s_addr = INADDR_ANY,
-            .sin_port = htons(1837)
+            .sin_port = htons(IRC_PORT)
         },
         .addr_len = sizeof(struct sockaddr_in)
     };
