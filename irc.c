@@ -46,8 +46,8 @@ void* chat_send(void *args) {
     irc_packet_t pkt = {0};
     while (1) {
         char* read_string = fgets(pkt.data, MSG_LEN, stdin);
-        if (read_string[0] == '\n') continue;
         if (read_string == NULL) break;
+        if (read_string[0] == '\n') continue;
 
         pkt.length = strlen(pkt.data);
         pkt.data[pkt.length-1] = '\0';
