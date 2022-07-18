@@ -25,10 +25,11 @@ int main(int argc, char const *argv[]) {
 
             user_t* server_user = &server.clients[server.client_qty++];
             *server_user = new_user;
-            if (server.client_qty == 1) {
+
+            channel_t* main_channel = server_search_channel_by_name(&server, "#main");
+            if (!main_channel) {
                 server_add_channel(&server, "#main", server_user, NULL);
             } else {
-                channel_t* main_channel = server_search_channel_by_name(&server, "#main");
                 channel_add_user(main_channel, server_user, NULL);
             }
         }
