@@ -46,7 +46,8 @@ void channel_remove_user(channel_t* channel, user_t* user) {
 
 bool channel_add_user(channel_t* channel, user_t* user, char* password) {
     if(!user || !channel) return false;
-    if(channel->password[0] != '\0') {
+    // printf("chanel_add_user::channel->password: %s\n", channel->password);
+    if(channel->password && channel->password[0] != '\0') {
         if (!password) {
             printf("%s tried to join %s but submitted no password\n", user->name);
             return false;
@@ -179,6 +180,16 @@ bool server_close_connection(server_t* server, channel_t* channel, user_t* user)
     return false;
 }
 
+void server_destroy_channel(server_t* server, channel_t* channel) {
+    // Swap removed user with last user added, then blank the last user slot
+    printf("channel qty = %d\n", server->channel_qty);
+    printf("deleting channel %s with %d users\n", channel->name, channel->user_qty);
+
+    memset(channel, 0, sizeof(channel_t));
+
+    server->channel_qty--;
+}
+
 void ping_client(user_t* user) {
     irc_packet_t pkt = {
         .user = "server",
@@ -191,8 +202,11 @@ void ping_client(user_t* user) {
 }
 
 channel_t* server_search_channel_by_name(server_t* server, char* name) {
-    for (int i = 0; i < server->channel_qty; i++) {
+    for (int i = 0; i < CHANNEL_QTY; i++) {
+        if (!server->channels[i].name) continue;
+
         if (!strcmp(server->channels[i].name, name)) {
+            printf("found channel %s\n", &server->channels[i]);
             return &server->channels[i];
         }
     }
@@ -388,7 +402,7 @@ void* channel_chat(void* args) {
     struct channel_args* ch_args = (struct channel_args*) args;
     server_t* server = ch_args->server;
     channel_t* channel = ch_args->channel;
-    // free(ch_args);
+    free(ch_args);
 
     irc_packet_t pkt;
 
@@ -434,14 +448,28 @@ void* channel_chat(void* args) {
         memset(pkt.data, '\0', pkt.length);
     }
 
-    printf("channel %s shutting down...\n", channel->name);
-    memset(channel, 0, sizeof(channel_t));
+    printf("chanel_chat::channel %s shutting down... (destroying thread)\n", channel->name);
+    server_destroy_channel(server, channel);
+    return NULL;
 }
 
 void server_add_channel(server_t* server, char* name, user_t* user, char* password) {
     pthread_mutex_lock(&server->ch_mutex);
 
-    channel_t* new_channel = &server->channels[server->channel_qty++];
+    if (server->channel_qty == CHANNEL_QTY) {
+        printf("server_add_channel::channel-search found no available slots :/\n");
+        exit(1);
+        return;
+    }
+
+    channel_t* new_channel = NULL;
+    for (int i = 0; i < CHANNEL_QTY; i++) {
+        if(server->channels[i].name[0] == '\0') {
+            new_channel = &server->channels[i];
+            break;
+        }
+    }
+
     strncpy(new_channel->name, name, CHANNEL_NAME_LEN);
     if (password) {
         strncpy(new_channel->password, password, CHANNEL_PASS_LEN);
@@ -468,6 +496,7 @@ void server_add_channel(server_t* server, char* name, user_t* user, char* passwo
     struct channel_args* ch_args = malloc(sizeof(struct channel_args));
     ch_args->server = server;
     ch_args->channel = new_channel;
+    server->channel_qty++;
     pthread_create(&new_channel->thread, NULL, channel_chat, ch_args);
 
     pthread_mutex_unlock(&server->ch_mutex);
