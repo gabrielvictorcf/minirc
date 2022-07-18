@@ -10,10 +10,10 @@ Made by:
 - Guilherme Machado Rios - 11222839
 
 ## How to
-1. Compile with `make`
-2. Open two terminals (or have two hosts in the same network)
-3. In each terminal, run `make run`
-4. Now you can just start chatting!
+1. Open two terminals (or have two hosts in the same network)
+2. In one terminal, run `make run_server`
+2. In another terminal, run `make run_client` (You can open more terminals to run more clients).
+4. Now you can just start chatting! 
 
 ## Specifications
 - linux 5.10.16.3
