@@ -45,5 +45,14 @@ clean:
 	@printf "\t$(BRED)RM$(RESET)   \t$(BIN)\n"
 	@rm -f $(BIN)
 
-run:
-	@./$(BIN)
+server: $(OBJS) | $(BIN_DIR)/
+	@$(CC) $(CFLAGS) -o $(BIN)_server ./src/server.c $(LIBS)
+
+run_server: server
+	@./$(BIN)_server
+
+client: $(OBJS) | $(BIN_DIR)/
+	@$(CC) $(CFLAGS) -o $(BIN)_client ./src/client.c $(LIBS)
+
+run_client: client
+	@./$(BIN)_client
