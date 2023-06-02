@@ -202,15 +202,19 @@ void ping_client(user_t* user) {
 }
 
 channel_t* server_search_channel_by_name(server_t* server, char* name) {
+    pthread_mutex_lock(&server->ch_mutex);
+
     for (int i = 0; i < CHANNEL_QTY; i++) {
         if (!server->channels[i].name) continue;
 
         if (!strcmp(server->channels[i].name, name)) {
             printf("found channel %s\n", &server->channels[i]);
+            pthread_mutex_unlock(&server->ch_mutex);
             return &server->channels[i];
         }
     }
 
+    pthread_mutex_unlock(&server->ch_mutex);
     return NULL;
 }
 
